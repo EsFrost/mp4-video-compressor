@@ -11,12 +11,12 @@
   "author": "Sigmund Frost",
   "license": "MIT",
   "devDependencies": {
-    "electron": "^latest",
-    "electron-builder": "^latest"
+    "electron": "^32.1.1",
+    "electron-builder": "^25.0.5"
   },
   "dependencies": {
-    "fluent-ffmpeg": "^latest",
-    "ffmpeg-static": "^latest"
+    "ffmpeg-static": "^5.2.0",
+    "fluent-ffmpeg": "^2.1.3"
   },
   "build": {
     "appId": "com.sigmundfrost.electronvideocompressor",
