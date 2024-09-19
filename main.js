@@ -3,9 +3,20 @@ const path = require("path");
 const ffmpeg = require("fluent-ffmpeg");
 const ffmpegPath = require("ffmpeg-static");
 
-ffmpeg.setFfmpegPath(ffmpegPath);
+let ffmpegExecutable;
+if (app.isPackaged) {
+  ffmpegExecutable = path.join(
+    process.resourcesPath,
+    "ffmpeg-static",
+    path.basename(ffmpegPath)
+  );
+} else {
+  ffmpegExecutable = ffmpegPath;
+}
 
-let mainWindow;
+ffmpeg.setFfmpegPath(ffmpegExecutable);
+
+console.log("FFmpeg Path:", ffmpegExecutable);
 
 function createWindow() {
   mainWindow = new BrowserWindow({
@@ -51,17 +62,26 @@ ipcMain.on("compress-video", (event, filePath) => {
     `compressed_${path.basename(filePath)}`
   );
 
-  ffmpeg(filePath)
-    .videoCodec("libx264")
-    .outputOptions(["-crf 28"])
-    .on("progress", (progress) => {
-      event.reply("compression-progress", progress.percent);
-    })
-    .on("end", () => {
-      event.reply("compression-complete", outputPath);
-    })
-    .on("error", (err) => {
-      event.reply("compression-error", err.message);
-    })
-    .save(outputPath);
+  try {
+    ffmpeg(filePath)
+      .videoCodec("libx264")
+      .outputOptions(["-crf 28"])
+      .on("progress", (progress) => {
+        event.reply("compression-progress", progress.percent);
+      })
+      .on("end", () => {
+        event.reply("compression-complete", outputPath);
+      })
+      .on("error", (err) => {
+        console.error("FFmpeg error:", err);
+        event.reply("compression-error", `FFmpeg error: ${err.message}`);
+      })
+      .save(outputPath);
+  } catch (err) {
+    console.error("Compression setup error:", err);
+    event.reply(
+      "compression-error",
+      `Compression setup failed: ${err.message}`
+    );
+  }
 });
