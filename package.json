@@ -1,6 +1,6 @@
 {
   "name": "mp4-video-compressor",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Ffmpeg video compressor for mp4 files",
   "main": "main.js",
   "scripts": {
@@ -39,7 +39,8 @@
     "win": {
       "target": [
         "nsis"
-      ]
+      ],
+      "icon": "icon/app.ico"
     },
     "nsis": {
       "oneClick": false,
